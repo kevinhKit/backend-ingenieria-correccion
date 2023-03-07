@@ -4,6 +4,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserModule } from './user/user.module';
 import { ChatModule } from './chat/chat.module';
 import { MessageModule } from './message/message.module';
+import { ProductsModule } from './products/products.module';
+
 
 @Module({
   imports: [
@@ -22,6 +24,8 @@ import { MessageModule } from './message/message.module';
     UserModule,
     ChatModule,
     MessageModule,
+    ProductsModule,
+    
   ],
   controllers: [],
   providers: [],
