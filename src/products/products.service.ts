@@ -4,6 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
+import { ProductImage } from './entities/product-image.entity';
 import { Product } from './entities/product.entity';
 
 @Injectable()
@@ -16,16 +17,23 @@ export class ProductsService {
     @InjectRepository(Product)
     private readonly productRepository: Repository<Product>,
 
+    @InjectRepository(ProductImage)
+    private readonly productImageRepository: Repository<ProductImage>,
+
   ){}
 
   async create(createProductDto: CreateProductDto) {
     
     try {
+      const { images = [], ...productDetails} = createProductDto;
 
-      const product = this.productRepository.create(createProductDto);
+      const product = this.productRepository.create({
+        ...productDetails,
+        images: images.map(image => this.productImageRepository.create({url:image}))
+      });
       await this.productRepository.save(product);
 
-      return product;
+      return { ...product, images};
       
     } catch (error) {
       this.handleDbException(error);
@@ -34,12 +42,15 @@ export class ProductsService {
   }
 
   findAll() {
-    return this.productRepository.find({});
+    return this.productRepository.find({
+      relations:{
+        images: true,
+      }  
+    });
   }
 
   async findOne(id: string) {
     
-  //const product = await this.productRepository.findOneBy({ id });
     const product = await this.productRepository.findOneBy({id});
     if(!product) 
       throw new NotFoundException(`Product whit id ${id} not found`);
@@ -50,7 +61,8 @@ export class ProductsService {
   async update(id: string, updateProductDto: UpdateProductDto) {
     const product = await this.productRepository.preload({
       id: id,
-      ...updateProductDto
+      ...updateProductDto,
+      images: [],
     });
 
     if( !product ) throw new NotFoundException(`Product with id: ${id} not found`);

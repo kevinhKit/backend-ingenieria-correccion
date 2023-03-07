@@ -1,4 +1,4 @@
-import { IsDate, IsInt, IsNumber, IsOptional, IsPositive, IsString, MinLength } from "class-validator";
+import { IsArray, IsDate, IsInt, IsNumber, IsOptional, IsPositive, IsString, MinLength } from "class-validator";
 
 export class CreateProductDto {
 
@@ -31,10 +31,15 @@ export class CreateProductDto {
 
     @IsString()
     @MinLength(1)
-    department:string
+    department:string;
 
     @IsInt()
     @IsPositive()
-    stock:number
+    stock:number;
+
+    @IsString({each:true})
+    @IsArray()
+    @IsOptional()
+    images?: string[];
 
 } 
