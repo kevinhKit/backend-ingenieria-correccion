@@ -1,5 +1,5 @@
 import { Message } from "src/message/entities/message.entity";
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { BeforeInsert, Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 
 @Entity('Chat')
@@ -14,24 +14,47 @@ export class Chat {
     @Column('uuid')
     secondparticipan: string;
 
-    @Column("date")
-    date: Date;
+    @Column("timestamp",{})
+    dateTime: Date;
 
-    @Column('smallint')
-    hour: number;
+    @Column('text',{
+        nullable: true,
+        default: null
+    })
+    idProduct?: string;
 
-    @Column('smallint')
+
+
+
+
+    @Column('smallint',{
+        default: 1
+    })
     state: number;
 
+    @Column('text',{
+        default: 1
+    })
+    isChat: string;
 
-    @ManyToOne(
+    @OneToMany(
         () => Message,
         (message) => message.chats
     )
-    message: Message;
+    message?: Message[];
+
+
+    @BeforeInsert()
+    transforDate(){
+        this.dateTime = new Date(+this.dateTime)
+    }
 
 
 
 
 
 }
+
+
+
+

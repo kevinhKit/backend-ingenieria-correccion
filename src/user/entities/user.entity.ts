@@ -81,7 +81,8 @@ export class User {
     // isActive: boolean;
 
     
-    @Column({default: () => "NOW()",
+    @Column('timestamp',{default: () => "current_timestamp",
+    // @Column('timestamp',{default: () => "select current_timestamp  ;",
         select: false})
     date: Date;
     
