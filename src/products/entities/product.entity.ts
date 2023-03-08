@@ -1,4 +1,5 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { ProductClick } from "./product-click.entity";
 import { ProductImage } from "./product-image.entity";
 
 @Entity()
@@ -48,5 +49,12 @@ export class Product {
         {cascade: true, eager:true}
     )
     images?: ProductImage[];
+
+    @OneToMany(
+        () => ProductClick,
+        (productImage) => productImage.product,
+        {cascade: true, eager:true}
+    )
+    click?: ProductClick;
 
 }
