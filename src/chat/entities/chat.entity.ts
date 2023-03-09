@@ -1,8 +1,8 @@
 import { Message } from "src/message/entities/message.entity";
-import { BeforeInsert, Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { BeforeInsert, Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 
 
-@Entity('Chat')
+@Entity('chat')
 export class Chat {
 
     @PrimaryGeneratedColumn('uuid')
@@ -39,9 +39,9 @@ export class Chat {
 
     @OneToMany(
         () => Message,
-        (message) => message.chats
+        (message) => message.chat,
     )
-    message?: Message[];
+    messages?: Message[];
 
 
     @BeforeInsert()
@@ -49,8 +49,12 @@ export class Chat {
         this.dateTime = new Date(+this.dateTime)
     }
 
-
-
+    // @OneToOne(type => Chat, Chat => Chat.amigos)
+    // @JoinColumn({ name: "amigo_id" })
+    // amigo: Chat;
+  
+    // @OneToOne(type => Chat, Chat => Chat.amigo)
+    // amigos: Chat;
 
 
 }

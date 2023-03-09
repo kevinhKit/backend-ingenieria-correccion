@@ -1,5 +1,5 @@
 import { Chat } from "src/chat/entities/chat.entity";
-import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { BeforeInsert, Column, Entity, JoinTable, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity('message')
 export class Message {
@@ -11,7 +11,7 @@ export class Message {
     content: string;
 
     @Column('timestamp')
-    dateTime: string;
+    dateTime: Date;
 
     // @Column('smallint',{
     //     default: 1
@@ -37,17 +37,26 @@ export class Message {
 
     @ManyToOne(
         () => Chat,
-        (chat) => chat.message,
+        (chat) => chat.messages,
         // {cascade:true},
-        
     )
-    chats: Chat;
+    chat: Chat;
 
     @Column('uuid',{
         nullable: true,
         default: null
     })
+    @OneToOne(
+        () => Message
+    )
+    @JoinTable()
     idPreviousMessage: string;
+
+    @BeforeInsert()
+    transforDate(){
+        this.dateTime = new Date(+this.dateTime)
+    }
+
 
 
 

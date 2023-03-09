@@ -11,6 +11,7 @@ import { Message } from './entities/message.entity';
 
     TypeOrmModule.forFeature([ Message ])
 
-  ]
+  ],
+  exports: [MessageModule, TypeOrmModule]
 })
 export class MessageModule {}

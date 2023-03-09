@@ -1,4 +1,5 @@
 import { IsNotEmpty, IsNumberString, IsOptional, IsUUID, MinLength } from "class-validator";
+import { Message } from "src/message/entities/message.entity";
 
 export class CreateChatDto {
 
@@ -25,10 +26,14 @@ export class CreateChatDto {
     @IsOptional()
     idProduct?: string;
 
-    @MinLength(11,{message: 'No puede enviar mensajes vacios.'})
-    @IsNotEmpty({message:'No envió o dejo vacío el contenido del mensaje.'})
+    // @MinLength(11,{message: 'No puede enviar mensajes vacios.'})
+    // @IsNotEmpty({message:'No envió o dejo vacío el contenido del mensaje.'})
     @IsOptional()
-    content?: string;
+    message?: Message;
+
+
+    // @IsOptional()
+    // chat? : any;
 
 
 

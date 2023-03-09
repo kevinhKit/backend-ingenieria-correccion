@@ -24,7 +24,7 @@ export class CreateMessageDto {
     @IsUUID()
     @IsNotEmpty({message:'No envió o dejo vacío el campo id mensaje previo.'})
     @IsOptional()
-    idPreviousMessage: string;
+    idPreviousMessage?: string;
 
 
 
