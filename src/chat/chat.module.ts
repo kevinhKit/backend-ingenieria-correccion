@@ -17,7 +17,7 @@ import { MessageService } from 'src/message/message.service';
     TypeOrmModule.forFeature([Chat]),
     UserModule,
     MessageModule,
-    UserModule
+    // UserModule
   ],
   exports: [ ChatModule, UserModule,  ]
 })

@@ -45,8 +45,8 @@ export class Chat {
 
 
     @BeforeInsert()
-    transforDate(){
-        this.dateTime = new Date(+this.dateTime)
+    transforDate(datetime : Date){
+        this.dateTime = datetime || new Date(+this.dateTime)
     }
 
     // @OneToOne(type => Chat, Chat => Chat.amigos)

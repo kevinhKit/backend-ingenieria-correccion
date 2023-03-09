@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { NotFoundException } from '@nestjs/common/exceptions';
 import { InjectRepository } from '@nestjs/typeorm';
+import { query } from 'express';
 import { NotFoundError } from 'rxjs';
 import { Message } from 'src/message/entities/message.entity';
 import { User } from 'src/user/entities/user.entity';
@@ -32,43 +33,43 @@ export class ChatService {
   //Crear un nuevo chat
   async create(createChatDto: CreateChatDto) {
 
-    try {
+    // try {
       
-      const {firstparticipan, secondparticipan, idProduct} = createChatDto;
+    //   const {firstparticipan, secondparticipan, idProduct} = createChatDto;
 
-      const participanOne = await this.userRepository.findOneBy({id:firstparticipan})
-      if(!participanOne){
-        throw new NotFoundException('El primer usuario enviado no existe.')
-      }
+    //   const participanOne = await this.userRepository.findOneBy({id:firstparticipan})
+    //   if(!participanOne){
+    //     throw new NotFoundException('El primer usuario enviado no existe.')
+    //   }
       
-      const participanTwo = await this.userRepository.findOneBy({id:secondparticipan})  
-      if(!participanTwo){
-        throw new NotFoundException('El segundo usuario enviado no existe.')
-      }
+    //   const participanTwo = await this.userRepository.findOneBy({id:secondparticipan})  
+    //   if(!participanTwo){
+    //     throw new NotFoundException('El segundo usuario enviado no existe.')
+    //   }
             
-      if(!participanTwo.state){
+    //   if(!participanTwo.state){
 
-        throw new NotFoundException('El segundo usuario enviado no existe.')
-      }
+    //     throw new NotFoundException('El segundo usuario enviado no existe.')
+    //   }
     
-      const { ...other} = {...createChatDto};
-      // const { message,...other} = {...createChatDto};
+    //   const { ...other} = {...createChatDto};
+    //   // const { message,...other} = {...createChatDto};
 
-      const persona = createChatDto.firstparticipan; 
-      const dateTime = createChatDto.dateTime; 
+    //   const persona = createChatDto.firstparticipan; 
+    //   const dateTime = createChatDto.dateTime; 
     
-      // const chat = await this.chatRepository.create({...createChatDto, });
-      const chat = await this.chatRepository.create({...createChatDto});
+    //   // const chat = await this.chatRepository.create({...createChatDto, });
+    //   const chat = await this.chatRepository.create({...createChatDto});
   
-      console.log(chat)
-      await this.chatRepository.save(chat);
+    //   console.log(chat)
+    //   await this.chatRepository.save(chat);
 
       
-      console.log('Succesful')
+    //   console.log('Succesful')
 
-    } catch (error) {
-      console.log(error,'error')
-    }
+    // } catch (error) {
+    //   console.log(error,'error')
+    // }
 
     //Crear Querry Runner
     const queryRunner = await this.dataSource.createQueryRunner();
@@ -76,17 +77,84 @@ export class ChatService {
     await queryRunner.startTransaction()
 
     try {
+      const {firstparticipan, secondparticipan, idProduct} = createChatDto;
+      const participanOne = await this.userRepository.findOneBy({id:firstparticipan})
+
+      if(!participanOne){
+        throw new NotFoundException('El primer usuario enviado no existe.')
+      }
+      const participanTwo = await this.userRepository.findOneBy({id:secondparticipan})  
+      if(!participanTwo){
+        throw new NotFoundException('El segundo usuario enviado no existe.')
+      }     
+      if(!participanTwo.state){
+        throw new NotFoundException('El segundo usuario enviado no existe.')
+      }
+
       
+      let chat = new Chat();
+
+      chat.firstparticipan = createChatDto.firstparticipan;
+      chat.secondparticipan = createChatDto.secondparticipan;
+      chat.dateTime = new Date();
+      await chat.transforDate(new Date(+createChatDto.dateTime))
+      
+      if ( createChatDto.idProduct) {
+        chat.idProduct = createChatDto.idProduct;
+      } else {
+        chat.idProduct = null
+      }
+
+      const newChat = await queryRunner.manager.save(Chat,chat)
+
+      if(createChatDto.message){
+        const messageSend = createChatDto.message[0]
+        const dataMessage = new Message()
+        dataMessage.content = messageSend.content;
+        dataMessage.dateTime = new Date();
+        await dataMessage.transforDate(createChatDto.dateTime)
+        dataMessage.idEmisor = messageSend.idEmisor;
+        dataMessage.chat = newChat;
+
+        const newMessage= await queryRunner.manager.save(Message,dataMessage)
+
+      }  
+      // console.log(createChatDto.message)
+
+      
+
+      
+      await queryRunner.commitTransaction()
+      await queryRunner.release()
+      return 'ok';
     } catch (error) {
-      console.log(error)
-      queryRunner.release();
+      
+      queryRunner.rollbackTransaction();
+      await queryRunner.release()
+      // console.log(error)
+      return error;
+    } finally {
+
+      
     }
-
-
 
 
     return 'Está acción ha agregado un nuevo chat';
   }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   findAll() {
     return `Está acción retorna todos los usuarios`;

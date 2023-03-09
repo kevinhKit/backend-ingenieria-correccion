@@ -53,8 +53,8 @@ export class Message {
     idPreviousMessage: string;
 
     @BeforeInsert()
-    transforDate(){
-        this.dateTime = new Date(+this.dateTime)
+    transforDate(datetime){
+        this.dateTime = datetime || new Date(+this.dateTime)
     }
 
 

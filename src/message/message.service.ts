@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { create } from 'domain';
+import { Chat } from 'src/chat/entities/chat.entity';
+import { User } from 'src/user/entities/user.entity';
 import { Repository } from 'typeorm';
 import { CreateMessageDto } from './dto/create-message.dto';
 import { UpdateMessageDto } from './dto/update-message.dto';
@@ -11,7 +13,9 @@ export class MessageService {
 
   constructor(
     @InjectRepository(Message)
-    private readonly messageRepository: Repository<Message>
+    private readonly messageRepository: Repository<Message>,
+    // @InjectRepository(Chat)
+    // private readonly chatRepository: Repository<Chat>
 
   ){}
 
@@ -21,8 +25,23 @@ export class MessageService {
 
     // const { content, dateTime, idEmisor, chats} = createMessageDto;
 
-    console.log(createMessageDto)
-    const message = this.messageRepository.create(createMessageDto)
+    console.log(createMessageDto.chats)
+
+    const {chats, ...other} = createMessageDto;
+    // const userSend = this.chatRepository.findOneBy({id:createMessageDto.chats})
+    // const message = new Message
+    //   message.content = createMessageDto.content;
+    //   message.dateTime = new Date();
+    //   message.idEmisor = createMessageDto.idEmisor;
+    //   message.chat = userSend;
+    // }
+
+    // console.log(userSend);
+
+    const message = this.messageRepository.create(
+      createMessageDto
+
+    )
 
 
     this.messageRepository.save(message);
