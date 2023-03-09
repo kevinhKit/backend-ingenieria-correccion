@@ -1,5 +1,6 @@
-import { Message } from "src/message/entities/message.entity";
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { User } from "src/user/entities/user.entity";
+import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Message } from "./message.entity";
 
 
 @Entity('Chat')
@@ -8,11 +9,8 @@ export class Chat {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
-    @Column('uuid')
-    firstparticipan: string;
-
-    @Column('uuid')
-    secondparticipan: string;
+    @Column()
+    title: string;
 
     @Column("date")
     date: Date;
@@ -20,15 +18,15 @@ export class Chat {
     @Column('smallint')
     hour: number;
 
-    @Column('smallint')
-    state: number;
+    @ManyToOne(() => User, (user) => user.chats1)
+    user1: User;
 
+    @ManyToOne(() => User, (user) => user.chats2)
+    user2: User;
 
-    @ManyToOne(
-        () => Message,
-        (message) => message.chats
-    )
-    message: Message;
+    @OneToMany(() => Message, (message) => message.chat)
+    messages: Message[];
+
 
 
 

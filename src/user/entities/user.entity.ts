@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Chat } from "src/chat/entities/chat.entity";
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 
 @Entity('User')
@@ -92,4 +93,11 @@ export class User {
     //     default: ['admin','moderador','usuario']
     // })
     // role: string[];
+
+
+    @OneToMany(() => Chat, (chat) => chat.user1)
+    chats1: Chat[];
+  
+    @OneToMany(() => Chat, (chat) => chat.user2)
+    chats2: Chat[];
 }

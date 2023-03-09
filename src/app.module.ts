@@ -3,8 +3,8 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserModule } from './user/user.module';
 import { ChatModule } from './chat/chat.module';
-import { MessageModule } from './message/message.module';
 import { ProductsModule } from './products/products.module';
+import { FilesModule } from './files/files.module';
 
 
 @Module({
@@ -23,8 +23,8 @@ import { ProductsModule } from './products/products.module';
     }),
     UserModule,
     ChatModule,
-    MessageModule,
     ProductsModule,
+    FilesModule,
     
   ],
   controllers: [],

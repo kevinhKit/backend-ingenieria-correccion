@@ -89,8 +89,6 @@ export class CreateUserDto {
     @IsOptional()
     state: string;
 
-    
-    
     @IsOptional()
     date: string;
 

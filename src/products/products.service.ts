@@ -4,6 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
+import { ProductClick } from './entities/product-click.entity';
 import { ProductImage } from './entities/product-image.entity';
 import { Product } from './entities/product.entity';
 
@@ -20,7 +21,45 @@ export class ProductsService {
     @InjectRepository(ProductImage)
     private readonly productImageRepository: Repository<ProductImage>,
 
+    //inyeccion del repositorio
+    @InjectRepository(ProductClick)
+    private productClickRepository: Repository<ProductClick>,
+
   ){}
+
+  //Con esto, cada vez que un usuario haga clic en un producto, 
+  //se creará una nueva entrada en la tabla ProductClick con la 
+  //fecha actual y el ID del producto correspondiente.
+  async registerClick(id: string) {
+    const product = await this.findOne(id);
+    if (!product) {
+      throw new NotFoundException(`Product with ID ${id} not found`);
+    }
+    const click = new ProductClick();
+    click.product = product;
+    await this.productClickRepository.save(click);
+  }
+  
+  //crear una consulta que une las tablas Product y ProductClick, 
+  //cuenta el número de clicks que ha recibido cada producto en 
+  //los últimos 30 días
+  async findMostPopularProducts(): Promise<Product[]> {
+    // Obtener la fecha de hace 30 días
+    const date = new Date();
+    date.setDate(date.getDate() - 30);
+  
+    // Realizar la consulta
+    const queryBuilder = this.productRepository.createQueryBuilder('product')
+      .leftJoinAndSelect('product.click', 'click')
+      .select('product.*')
+      .addSelect('COUNT(click.id)', 'clicks')
+      .where('click.date >= :date', { date })
+      .groupBy('product.id')
+      .orderBy('clicks', 'DESC')
+      .limit(10); // Cambia este número si deseas obtener más productos
+  
+    return queryBuilder.getMany();
+  }
 
   async create(createProductDto: CreateProductDto) {
     
